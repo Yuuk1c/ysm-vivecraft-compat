@@ -60,11 +60,11 @@ configurations {
 }
 
 dependencies {
-    // NeoForge 由插件自动提供，无需手动声明
-    // YSM 和 Vivecraft 通过本地 libs 目录提供，见下方 fileTree 加载
+    // NeoForge 由插件自动提供
+    // YSM 和 Vivecraft 通过 libs 目录加载
 }
 
-// 本地 lib 支持：将 libs/ 目录下的 jar 加入编译路径
+// 本地 lib 支持
 if (file("libs").exists()) {
     dependencies {
         compileOnly fileTree(dir: 'libs', include: ['*.jar'])
