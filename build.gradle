@@ -50,26 +50,7 @@ neoForge {
 }
 
 repositories {
-    // 国内镜像：阿里云 Maven Central 镜像（加速 Central 依赖）
-    maven {
-        name = "AliYun Central"
-        url = "https://maven.aliyun.com/repository/central"
-    }
-    // 国内镜像：阿里云 Google 镜像
-    maven {
-        name = "AliYun Google"
-        url = "https://maven.aliyun.com/repository/google"
-    }
-    // CreeperHost Maven 镜像（包含 neoform-runtime，国内可访问）
-    maven {
-        name = "CreeperHost"
-        url = "https://maven.creeperhost.net"
-    }
-    // BMCLAPI 镜像：NeoForge Maven（国内可访问）
-    maven {
-        name = "BMCLAPI-NeoForge"
-        url = "https://bmclapi2.bangbang93.com/maven"
-    }
+ 
     // NeoForge 官方 CDN（已验证可用，包含 neoforge + neoform-runtime jar）
     maven {
         name = "NeoForged-CDN"
