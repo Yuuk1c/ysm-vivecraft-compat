@@ -1,27 +1,27 @@
 name: Build Mod
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
       
-      # 下载前置模组 YSM 和 Vivecraft 到 libs 目录
-      - name: Download dependencies
-        run: |
-          mkdir -p libs
-          wget -O libs/yes-steve-model.jar "https://cdn.modrinth.com/data/example/versions/2.5.1/yes-steve-model-2.5.1-forge-1.21.1.jar"
-          wget -O libs/vivecraft.jar "https://cdn.modrinth.com/data/example/versions/1.21.1-1.3.7/vivecraft-1.21.1-1.3.7-forge.jar"
-      
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+      
       - name: Build with Gradle
         run: ./gradlew build
+      
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
