@@ -36,7 +36,7 @@ public class YSMPlayerRendererMixin {
         at = @At("HEAD"),
         require = 0  // Don't fail if method not found (optional compatibility)
     )
-    private void onRenderHead(Object... args, CallbackInfo ci) {
+private void onRenderHead(CallbackInfo ci, Object... args) {
         // Find the player argument and update VR cache
         for (Object arg : args) {
             if (arg instanceof Player player) {
