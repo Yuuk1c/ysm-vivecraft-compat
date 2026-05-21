@@ -16,29 +16,41 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       
-      - name: Fix repository configuration
+      - name: Fix settings.gradle (remove broken mirrors)
         run: |
-          # 注释掉有问题的镜像仓库（这里用 sed 在行首添加 // 注释掉整行）
-          sed -i "s|maven { url 'https://repo.huaweicloud.com/gradle/gradle' }|// &|" build.gradle
-          sed -i "s|maven { url 'https://maven.aliyun.com/repository/central' }|// &|" build.gradle
-          sed -i "s|maven { url 'https://maven.aliyun.com/repository/google' }|// &|" build.gradle
-          sed -i "s|maven { url 'https://maven.creeperhost.net/' }|// &|" build.gradle
-          sed -i "s|maven { url 'https://bmclapi2.bangbang93.com/maven' }|// &|" build.gradle
-          sed -i "s|maven { url 'https://neoforged.forgecdn.net/releases' }|// &|" build.gradle
-          # 确保保留 NeoForge 和 Maven Central
+          # 如果 settings.gradle 存在 dependencyResolutionManagement 块，则将其替换为只含官方仓库
+          if grep -q "dependencyResolutionManagement" settings.gradle; then
+            # 删除整个 dependencyResolutionManagement 块（从该行到下一个单独的 } 行）
+            sed -i '/dependencyResolutionManagement/,/^}/d' settings.gradle
+            # 追加新的块，只包含 mavenCentral 和 NeoForge
+            cat >> settings.gradle << 'EOF'
+          dependencyResolutionManagement {
+              repositories {
+                  mavenCentral()
+                  maven { url 'https://maven.neoforged.net/releases' }
+              }
+          }
+          EOF
+          fi
+      
+      - name: Fix build.gradle repositories
+        run: |
+          # 确保 build.gradle 里的 repositories 只保留官方源，删除所有镜像
+          # 将整个 repositories { ... } 替换为精简版
+          sed -i '/repositories\s*{/,/}/c\repositories {\n    mavenCentral()\n    maven { url "https://maven.neoforged.net/releases" }\n}' build.gradle
       
       - name: Download dependencies (YSM & Vivecraft)
         run: |
           mkdir -p libs
+          # 请自行替换为 Modrinth 上实际文件的直链
           wget -O libs/yes-steve-model.jar "https://cdn.modrinth.com/data/86xjpqqS/versions/1rPJlKDJ/ysm-2.6.5-neoforge%2Bmc26.1-hotfix.jar?mr_download_reason=standalone&mr_loader=neoforge"
           wget -O libs/vivecraft.jar "https://cdn.modrinth.com/data/wGoQDPN5/versions/eZ25nVLw/vivecraft-1.21.1-1.3.8-neoforge.jar?mr_download_reason=standalone&mr_game_version=1.21.1&mr_loader=neoforge"
-        # 如果上面的链接失效，请去 Modrinth 找到对应版本的直链替换
       
       - name: Make gradlew executable
         run: chmod +x ./gradlew
       
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build with Gradle (refresh dependencies)
+        run: ./gradlew build --refresh-dependencies
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
