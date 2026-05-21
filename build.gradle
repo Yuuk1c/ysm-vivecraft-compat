@@ -68,7 +68,6 @@ repositories {
         content {
             includeGroup "maven.modrinth"
         }
-    }
     // GeckoLib（YSM 依赖）
     maven {
         name = "GeckoLib"
