@@ -93,6 +93,7 @@ processResources {
 }
 
 tasks.named('jar', Jar) {
+    exclude 'org/vivecraft/**'            // 排除所有 vivecraft 包
     manifest {
         attributes([
             'Specification-Title'     : mod_id,
